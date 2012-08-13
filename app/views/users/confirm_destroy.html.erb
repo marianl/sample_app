@@ -1,0 +1,24 @@
+<% provide(:title, 'Confirm Destroy User') %>
+<div class="center hero-unit">
+<h2>Confirm Destroy User</h2>
+
+	<h3>Are you sure you want to destroy this user?</h3>
+<%= form_for(@user, :url => user_path(@user), :html => { :method => :delete }) do |f| %>
+<div class="row">
+	<aside class="span2">
+		<section>
+			<h3>
+				<%= gravatar_for @user, size: 30 %>
+				<%= @user.name %>
+			</h3>
+		</setion>
+	</aside>
+</div>
+
+
+
+<%= submit_tag "Destroy", class: "btn btn-large btn-primary" %> or <%= link_to "cancel", users_path %>
+</div>
+<% end %>
+
+

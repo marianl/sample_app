@@ -15,7 +15,19 @@
 			<% end %>
 			<%= yield %>
 			<%= render 'layouts/footer' %>
+			
 			<%= debug(params) if Rails.env.development? %>
+<!--			<%= request.inspect %>
+			<%= debug(request.env['REMOTE_ADDR'].inspect) if Rails.env.development?%>
+			<%= debug(request.request_method.inspect) if Rails.env.development? %>
+			<%= debug(request.env.class) if Rails.env.development? %>
+			<%= debug(request.uuid.inspect) if Rails.env.development? %>
+			<%= debug(request.env['REMOTE_HOST'].inspect) if Rails.env.development?%>
+			<%= debug(request.env['HTTP_COOKIE'].inspect) if Rails.env.development?%>
+			<%= debug(request.original_url) if Rails.env.development? %>
+			<%= debug(request.headers["CONTENT_LENGTH"].inspect) if Rails.env.development? %>
+			<%= debug(request.remote_ip.inspect) if Rails.env.development? %>
+		-->
 		</div>
 	</body>
 </html>

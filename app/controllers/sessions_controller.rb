@@ -1,6 +1,10 @@
 class SessionsController < ApplicationController
 	
 	def new
+		if signed_in?
+      		#redirect_to root_path , notice:"You are signed in."
+      		redirect_to current_user , notice:"You are signed in."
+      	end
 	end
 	
 	def create

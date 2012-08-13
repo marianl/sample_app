@@ -1,6 +1,12 @@
 SampleApp::Application.routes.draw do
   #get "users/new"
   resources:users
+  #resources :users, :member => { :confirm_destroy => :get }
+  resources :users do
+       member do
+        get 'confirm_destroy'
+       end
+  end
   resources:sessions, only: [:new, :create, :destroy]
 
   #get "static_pages/home"

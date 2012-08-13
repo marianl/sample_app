@@ -49,14 +49,17 @@ describe "User pages" do
 
       describe "delete links" do
          it { should_not have_link('delete') }
+         it { should have_selector('title', text: 'All users') }
+         it { should have_link('Sign out', href: signout_path) }
 
          describe "as an admin user" do
             let(:admin) { FactoryGirl.create(:admin) }
+            
             before do
+               click_link 'Sign out'
                sign_in admin
                visit users_path
             end
-
             it { should have_link('delete', href: user_path(User.first)) }
             it "should be able to delete another user" do
                expect { click_link('delete', href: user_path(User.first)) }
@@ -112,7 +115,7 @@ describe "User pages" do
    			fill_in "Name", with: "Example User"
    			fill_in "Email", with: "user@example.com"
    			fill_in "Password", with: "foobar"
-   			fill_in "Password confirmation", with: "foobar"
+   			fill_in "Confirm Password", with: "foobar"
    		end
    		it "should create a user" do
    			expect { click_button submit}.to change(User, :count).by(1)
