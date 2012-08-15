@@ -11,6 +11,13 @@ FactoryGirl.define do
 			admin true
 		end
 	end
+
+	factory :micropost do
+		content "Lorem ipsum"
+		user
+	end
+
+
 	factory :wrong_user do
 		name "Michael Harlt"
 		email "wrong@example.com"
