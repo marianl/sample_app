@@ -23,16 +23,48 @@ describe "Micropost pages" do
 		end
 
 		describe "with valid information" do
+			
+			before { visit root_path }
+			it { should have_link('view my profile') }
+			it { should have_content('0 microposts') }
 
-			before { fill_in 'micropost_content', with: "Lorem ipsum" }
+			before { fill_in 'micropost_content', with: "Lorem ipsum 1" }
 			it "should create a micropost" do
 				expect { click_button "Post" }.should change(Micropost, :count).by(1)
+			end
+
+			describe " side bar content when create the first micropost" do
+				before do 
+					click_button "Post" 
+					visit root_path
+				end
+				it { should have_link('view my profile') }	
+				it { should have_content('1 micropost') }
+
+				describe  "side bar pluralize" do 
+					before { fill_in 'micropost_content', with: "Lorem ipsum 2" }
+					it "should create the second micropost" do
+						expect { click_button "Post" }.should change(Micropost, :count).by(1)
+					end				
+					describe " side bar content when create the second micropost" do
+						before do 
+							click_button "Post" 
+							visit root_path
+						end
+						it { should have_link('view my profile') }	
+						it { should have_content('2 microposts') }
+					end				
+
+				end
 			end
 		end
 	end
 
 	describe "micropost destruction" do
-		before { FactoryGirl.create(:micropost, user: user) }
+		before { 
+			FactoryGirl.create(:micropost, user: user) 
+			FactoryGirl.create(:micropost, user: user) 
+		}
 
 		describe "as correct user" do
 			before { visit root_path }
@@ -41,5 +73,29 @@ describe "Micropost pages" do
 				expect { click_link "delete" }.should change(Micropost, :count).by(-1)
 			end
 		end
+	end
+
+	describe "micropost pagination" do
+		before {
+			35.times{ FactoryGirl.create(:micropost, user: user) }
+			visit root_path
+		}
+		after { Micropost.delete_all }
+
+		it { should have_link('view my profile') }
+		it { should have_content('35 microposts') }
+		it { should have_selector('div.pagination') }
+
+		it "should list each micropost" do
+			user.microposts.paginate(page: 1).each do |micropost|
+				page.should have_selector('li', text: micropost.content)
+			end
+		end
+	end
+
+	describe "user can't delete micropost of other users" do
+		let (:other_user) { FactoryGirl.create(:user, email: "other@example.com") }
+		before { visit user_path(other_user) }
+		it { should_not have_link "delete" }
 	end
 end
