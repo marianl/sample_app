@@ -4,11 +4,12 @@ SampleApp::Application.routes.draw do
   #resources :users, :member => { :confirm_destroy => :get }
   resources :users do
        member do
-        get 'confirm_destroy'
+        get 'confirm_destroy', :following, :followers
        end
   end
-  resources:sessions, only: [:new, :create, :destroy]
-  resources:microposts, only: [:create, :destroy]
+  resources :sessions, only: [:new, :create, :destroy]
+  resources :microposts, only: [:create, :destroy]
+  resources :relationships, only: [:create, :destroy]
 
   #get "static_pages/home"
   root to: 'static_pages#home'
