@@ -134,6 +134,34 @@ describe "Static Pages" do
     #a#end
   end
 
+  describe "Profile page" do
+    describe "for signed-in users" do
+      let(:user) { FactoryGirl.create(:user) }
+      before do
+        sign_in user 
+        visit user_path(user)
+      end
+
+      it "should render the user's microposts" do
+        user.microposts.each do |item|
+          page.should have_selector("li##{item.id}", text: item.content)
+        end
+      end
+
+      describe "follower/following counts" do
+        let(:other_user) { FactoryGirl.create(:user) }
+        before do
+          other_user.follow!(user)
+          visit user_path(user)
+        end
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
+      end
+
+    end
+  end
+
   it "should have the right links on the layout" do
      visit root_path
      click_link "About"

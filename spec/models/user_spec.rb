@@ -198,17 +198,130 @@ describe User do
 
   describe "following" do
     let(:other_user) { FactoryGirl.create(:user) }
+    let(:another_user) { FactoryGirl.create(:user) }
+
     before do
       @user.save
       @user.follow!(other_user)
+      @user.follow!(another_user)
     end
 
     it { should be_following(other_user) }
+    it { should be_following(another_user) }
     its(:followed_users) { should include(other_user) }
+    its(:followed_users) { should include(another_user) }
 
     describe "followed user" do
       subject { other_user }
       its(:followers) { should include(@user) }
     end
+
+    describe "followed another user" do
+      subject { another_user }
+      its(:followers) { should include(@user) }
+    end
   end
+
+  describe "relationships associations" do
+    let(:other_user) { FactoryGirl.create(:user) }
+    before do
+      @user.save
+      @user.follow!(other_user)
+      other_user.follow!(@user)
+    end
+
+    it "should destroy associated relationships" do
+      relationships = @user.relationships
+      @user.destroy
+      relationships.should be_empty
+    end
+
+    it "should destroy associated reverse relationships" do
+      reverse_relationships = @user.reverse_relationships
+      @user.destroy
+      reverse_relationships.should be_empty
+    end
+
+    context "when a follower/followed user is destroyed" do
+      subject { other_user }
+
+      before { @user.destroy }
+
+      its(:relationships) { should_not include(@user) }
+      its(:reverse_relationships) { should_not include(@user) }
+      its(:followed_users) { should_not include(@user) }
+      its(:followers) { should_not include(@user) }
+    end
+  end
+
+  describe "user relationships associations" do
+    let (:other_user) { FactoryGirl.create(:user) }
+    let (:another_user) { FactoryGirl.create(:user) }
+    let (:user_relationships) { @user.relationships }
+    let (:user_reverse_relationships) { @user.reverse_relationships }
+
+    before do
+      @user.save
+      @user.follow!(other_user)
+      @user.follow!(another_user)
+      other_user.follow!(@user)
+      other_user.follow!(another_user)
+      another_user.follow!(@user)
+      another_user.follow!(other_user)
+      user_relationships = @user.relationships
+      user_reverse_relationships = @user.reverse_relationships
+      user_followings = @user.followed_users
+      other_user_followers = other_user.followers
+    end
+
+    its(:followed_users) { should include(other_user) }
+    its(:followers) { should include(another_user) }
+    its(:relationships) { should_not be_empty }
+    its(:reverse_relationships) { should_not be_empty }
+
+    describe "should disappear from followers" do
+      
+      before do 
+        @user.destroy
+      end
+
+      
+      it "user relationships should be nil" do
+        user_relationships.should be_empty
+      end
+      it "user reverse relationships shoulb be empty" do
+        user_reverse_relationships.should be_empty
+      end
+      
+
+      subject { other_user }
+      its(:followed_users) { should_not include(@user) }
+      its(:followers) { should_not include(@user) }
+      its(:relationships) { should_not include(@user) }
+      its(:reverse_relationships) { should_not include(@user) }
+
+      subject { another_user }
+      its(:followed_users) { should_not include(@user) }
+      its(:followers) { should_not include(@user) }
+      its(:relationships) { should_not include(@user) }
+      its(:reverse_relationships) { should_not include(@user) }
+    end
+
+    it "should destroy associated followers" do
+      followers = @user.followers
+      @user.destroy
+      followers.each do |follower|
+        follower.followed_users.should_not include(@user)
+      end
+    end
+
+    it "should destroy associated followed users" do
+      followed_users = @user.followed_users
+      @user.destroy
+      followed_users.each do |followed_user|
+        followed_user.followers.should_not include(@user)
+      end
+    end
+  end
+
 end

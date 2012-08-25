@@ -8,5 +8,8 @@
 	<%= link_to "view my profile", current_user %>
 </span>
 <span>
-	<%= pluralize(current_user.microposts.count, "micropost") %>
+	<b><%= pluralize(current_user.microposts.count, "micropost") %></b>
 </span>
+<!--
+<span><b>Microposts:</b> <%= @current_user.microposts.count %></span>
+-->
