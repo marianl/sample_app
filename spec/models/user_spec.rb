@@ -324,4 +324,26 @@ describe User do
     end
   end
 
+  describe "user replies" do
+    before(:each) do
+      @reply_to_user = FactoryGirl.create(:userToReplyTo)
+      @user_with_strange_name = FactoryGirl.create(:user, email: "strange_name@example.com", name: "Duck Van Quack")
+    end
+    it "should provide a Shorhand Username" do
+      @reply_to_user.shorthand.should == "User_To_Reply"
+    end
+    it "should provide a Shorthand Username for names with 3 parts" do
+      @user_with_strange_name.shorthand.should == "Duck_Van_Quack"
+    end
+    it "should be findable by shorthand name" do
+      user = User.find_by_shorthand("User To Reply")
+      user.should == @reply_to_user
+    end
+    it "should scope replies to self" do 
+      @user.save!
+      m = @user.microposts.create(content:"@User_To_Reply to user")
+      m.in_reply_to.should == @reply_to_user
+      @reply_to_user.replies.should == [m]
+    end
+  end
 end

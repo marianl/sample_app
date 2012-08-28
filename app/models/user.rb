@@ -17,7 +17,8 @@ class User < ActiveRecord::Base
   has_many :followed_users, through: :relationships, source: :followed
   has_many :reverse_relationships, foreign_key: "followed_id", class_name: "Relationship", dependent: :destroy 
   has_many :followers, through: :reverse_relationships, source: :follower
-  
+  has_many :replies, foreign_key: "in_reply_to_id", class_name: "Micropost"
+
   #before_save { |user| user.email = email.downcase }
   before_save { self.email.downcase! }
   before_save :create_remember_token
@@ -32,6 +33,7 @@ class User < ActiveRecord::Base
 
   def feed
     Micropost.from_users_followed_by(self)
+    Micropost.from_users_followed_by_including_replies(self)
   end
 
   def following?(other_user)
@@ -45,6 +47,23 @@ class User < ActiveRecord::Base
   def unfollow!(other_user)
     relationships.find_by_followed_id(other_user.id).destroy
   end
+
+  def shorthand 
+    #name.gsub(/\s*/,"")
+    name.gsub(/ /,"_")
+  end
+
+  def self.shorthand_to_name(sh)
+    #name.gsub(/\s*/,"")
+    sh.gsub(/_/," ")
+  end
+
+  def self.find_by_shorthand(shorthand_name)
+    all = where(name: User.shorthand_to_name(shorthand_name))
+    return nil if all.empty?
+    all.first
+  end
+
 
   private
     def create_remember_token

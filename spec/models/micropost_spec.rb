@@ -11,7 +11,8 @@ describe Micropost do
 
   it { should respond_to(:content) }
   it { should respond_to(:user_id) }
-  it { should respond_to(:user)}
+  it { should respond_to(:user) }
+  it { should respond_to(:in_reply_to) }
   its(:user) { should == user }
 
   it { should be_valid }
@@ -32,5 +33,15 @@ describe Micropost do
   			Micropost.new(user_id: user.id)
   		end.should raise_error(ActiveModel::MassAssignmentSecurity::Error)
   	end
+  end
+
+  describe "replies" do
+    before(:each) do
+      @reply_to_user = FactoryGirl.create(:userToReplyTo)
+      @micropost = user.microposts.create(content: "@User_To_Reply look a reply to User To Reply")
+    end
+    it "should identify a @user and set the in_reply_to field accordingly" do
+      @micropost.in_reply_to.should ==  @reply_to_user
+    end
   end
 end
