@@ -44,4 +44,6 @@ describe Micropost do
       @micropost.in_reply_to.should ==  @reply_to_user
     end
   end
+
+  
 end

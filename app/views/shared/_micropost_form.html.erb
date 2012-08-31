@@ -1,9 +1,33 @@
 <%= form_for(@micropost) do |f| %>
 	<%= render 'shared/error_messages', object: f.object %>
 	<div class="field">
-		<%= f.text_area :content, placeholder: "Compose new micropost..." %>
+    <% if @default_content.nil? %>
+		  <%= f.text_area :content, placeholder: "Compose new micropost...", focus: false %>
+    <% else %>
+      <%= f.text_area :content, value: @default_content, focus: false %>
+    <% end %>
 	</div>
-
 	<%= f.submit "Post", class: "btn btn-large btn-primary" %>
 	<span class="countdown"></span>
 <% end %>
+
+<script language="javascript" type="text/javascript">
+    var mytext = document.getElementById("micropost_content"); 
+    var focusElement = document.activeElement;
+
+    var valor = mytext.value;
+    textlength = mytext.value.length;
+    if (textlength < 1)
+    {
+      focusElement.focus();
+    }
+    if (textlength > 0) 
+    {
+      mytext.focus();
+      mytext.value = '';
+      mytext.value = valor;
+    }
+
+</script>
+
+

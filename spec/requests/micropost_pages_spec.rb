@@ -98,4 +98,40 @@ describe "Micropost pages" do
 		before { visit user_path(other_user) }
 		it { should_not have_link "delete" }
 	end
+
+	describe "replies" do
+		before { visit root_path }
+		describe "with invalid username" do 
+			before { fill_in 'micropost_content', with: "@invalid_username to reply" }
+			it "should not create a micropost" do
+				expect { click_button "Post" }.should_not change(Micropost, :count)
+			end
+			describe "error messages" do 
+				before { click_button "Post" }
+				it { should have_content('error') }
+			end
+		end
+		describe "with valid username" do
+			before do
+				@reply_to_user = FactoryGirl.create(:userToReplyTo)
+				fill_in 'micropost_content', with: "@User_To_Reply look a reply to User To Reply"
+			end
+			it "should create a micropost" do
+				expect { click_button "Post" }.should change(Micropost, :count).by(1)
+			end
+		end
+		describe "with blank reply" do
+			before do 
+				@reply_to_user = FactoryGirl.create(:userToReplyTo)
+				fill_in 'micropost_content', with: "@User_To_Reply"
+			end
+			it "should not create a micropost" do
+					expect { click_button "Post"}.should_not change(Micropost, :count)
+				end
+			describe "should raise error" do
+				before { click_button "Post" }
+				it { should have_content('error') }
+			end
+		end
+	end
 end

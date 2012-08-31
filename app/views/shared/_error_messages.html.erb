@@ -4,9 +4,11 @@
 			The form contains <%= pluralize(object.errors.count, "error") %>.
 		</div>
 		<ul>
-			<% object.errors.full_messages.each do |msg| %>
-				<li>* <%= msg %></li>
-			<% end %>
+  		<% object.errors.full_messages.each do |msg| %>
+  			<% msg.gsub!(/In reply to/,"") %>
+  			<% msg.gsub!(/In reply length/,"") %>
+  			<li> * <%= msg.gsub(/In reply to/,"") %></li>
+  		<% end %>
 		</ul>
 	</div>
 <% end %>
