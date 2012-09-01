@@ -108,7 +108,7 @@ describe "Micropost pages" do
 			end
 			describe "error messages" do 
 				before { click_button "Post" }
-				it { should have_content('error') }
+				it { should have_content("Recipient doesn't exist") }
 			end
 		end
 		describe "with valid username" do
@@ -130,7 +130,24 @@ describe "Micropost pages" do
 				end
 			describe "should raise error" do
 				before { click_button "Post" }
-				it { should have_content('error') }
+				it { should have_content("Reply content can't be blank") }
+			end
+		end
+		describe "with same receiver and sender" do
+			before do
+				@reply_to_user = FactoryGirl.create(:userToReplyTo)
+				click_link 'Sign out'
+				sign_in(@reply_to_user)
+				visit root_path
+				fill_in 'micropost_content', with: "@User_To_Reply"
+			end
+			it "should not create a reply" do
+				expect { click_button "Post"}.should_not change(Micropost, :count)
+			end
+			describe "should railse error" do
+				before { click_button "Post" }
+				it { should have_content("You can't reply to yourself") } 
+				it { should have_content("Reply content can't be blank") }
 			end
 		end
 	end

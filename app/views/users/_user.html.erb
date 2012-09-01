@@ -1,6 +1,9 @@
 		<li>
 			<%= gravatar_for user, size:52 %>
 			<%= link_to user.name, user %>
+      <% if !current_user?(user) %>
+        |  <%= link_to "Reply", controller: 'static_pages', action: 'home',  defaultcontent: '@' + user.shorthand + ' '%>
+      <% end %>
 			<% if current_user.admin? && !current_user?(user) %>
 				|  <%= link_to "delete", user, method: :delete, data: { confirm: "You sure" } %>
 				|  <%= link_to_destroy "Destroy", user_path(user), confirm_destroy_user_path(user) %>

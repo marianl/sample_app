@@ -47,6 +47,26 @@ describe "User pages" do
          end
       end 
 
+      describe "Reply links" do
+         let (:replyUser) { FactoryGirl.create(:userToReplyTo) }
+         it { should have_link('Reply', options = { controller: 'static_pages', action: 'home', defaultcontent: '@' + replyUser.shorthand }) }
+         describe "should redirect to post a reply" do
+            before do
+               click_link('Reply')
+            end
+            it { should_not have_selector('title', text: '| Home') } 
+            it { should have_content('@') }
+         end
+         describe "should not reply sign in user" do
+            before do
+               click_link 'Sign out'
+               sign_in replyUser
+               visit users_path
+            end
+            #it { should_not have_link('Reply', options = { controller: 'static_pages', action: 'home', defaultcontent: '@' + replyUser.shorthand }) }
+         end
+      end
+
       describe "delete links" do
          it { should_not have_link('delete') }
          it { should have_selector('title', text: 'All users') }

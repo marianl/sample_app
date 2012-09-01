@@ -13,6 +13,7 @@ describe Micropost do
   it { should respond_to(:user_id) }
   it { should respond_to(:user) }
   it { should respond_to(:in_reply_to) }
+  it { should respond_to(:in_reply_length) }
   its(:user) { should == user }
 
   it { should be_valid }
