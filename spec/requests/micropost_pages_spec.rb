@@ -146,6 +146,7 @@ describe "Micropost pages" do
 			end
 			describe "should railse error" do
 				before { click_button "Post" }
+				it { should have_content('error') }
 				it { should have_content("You can't reply to yourself") } 
 				it { should have_content("Reply content can't be blank") }
 			end
